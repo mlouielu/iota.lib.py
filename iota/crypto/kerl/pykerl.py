@@ -2,7 +2,8 @@
 from __future__ import absolute_import, division, print_function, \
   unicode_literals
 
-from sha3 import keccak_384
+#from sha3 import keccak_384
+from Crypto.Hash import keccak
 from six import PY2
 from typing import MutableSequence, Optional
 
@@ -15,6 +16,7 @@ __all__ = [
 
 BYTE_HASH_LENGTH = 48
 TRIT_HASH_LENGTH = 243
+
 
 class Kerl(object):
   k = None # type: keccak_384
@@ -70,7 +72,7 @@ class Kerl(object):
       # In order to use Python's built-in bytes type
       unsigned_bytes = bytearray(conv.convert_sign(b) for b in signed_nums)
 
-      self.k.update(unsigned_bytes)
+      self.k.update(bytes(unsigned_bytes))
 
       offset += TRIT_HASH_LENGTH
 
@@ -132,9 +134,10 @@ class Kerl(object):
 
       # Reset internal state before feeding back in
       self.reset()
-      self.k.update(flipped_bytes)
+      self.k.update(bytes(flipped_bytes))
 
       offset += TRIT_HASH_LENGTH
 
   def reset(self):
-    self.k = keccak_384()
+    self.k = keccak.new(digest_bits=384)
+
